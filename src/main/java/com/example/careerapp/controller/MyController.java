@@ -38,12 +38,23 @@ public class MyController {
     GoalsRepository goalsRepository;
     @Autowired
     IndustryRepository industryRepository;
-    @Autowired
+
+    OrganisationRepository organisationRepository;
     OccupationRepository occupationRepository;
+
     @Autowired
     JobsRepository jobsRepository;
-    @Autowired
-    OrganisationRepository organisationRepository;
+
+    public MyController(OrganisationRepository organisationRepository) {
+        this.organisationRepository = organisationRepository;
+    }
+
+    public void setOccupationRepository(OccupationRepository occupationRepository) {
+        this.occupationRepository = occupationRepository;
+    }
+
+
+
 
     //CONTACT
     @PostMapping("/addContact")
@@ -480,15 +491,17 @@ public class MyController {
     }
 
     @PostMapping("/login")
-    public String Login(@RequestParam String username, @RequestParam String password) {
+    public User Login(@RequestParam String username, @RequestParam String password) {
         if(employeeRepository.findByUsername(username)!=null &&
-                employeeRepository.findByUsername(username).getPassword().equals(password)) {
-            return "user";
+                (employeeRepository.findByUsername(username).getPassword().equals(password)) &&
+        employeeRepository.findByUsername(username).getUsername().equals(username)) {
+            return new User(username,"user");
         }
         else if(organisationRepository.findByUsername(username)!=null &&
-                organisationRepository.findByUsername(username).getPassword().equals(password)) {
-            return "admin";
+                (organisationRepository.findByUsername(username).getPassword().equals(password)) &&
+                organisationRepository.findByUsername(username).getUsername().equals(username)) {
+            return new User(username,"admin");
         }
-        return "";
+        return null;
     }
 }
